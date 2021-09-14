@@ -4,7 +4,8 @@ module;
 #include <Windows.h>
 
 export module Launch;
-import Config;
+import Config;
+
 
 export enum class LaunchType
 {

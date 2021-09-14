@@ -1,7 +1,8 @@
 import CmdLineParser;
 import Setup;
 import ConfigReader;
-import Launch;
+import Launch;
+
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
 		Setup::RunDelete(false);
 		break;
 	case LaunchType::Config:
+		ConfigReader::ApplyConfig(cmd.getConfigEdit());
 		break;
 	case LaunchType::Open:
 		break;

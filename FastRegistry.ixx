@@ -126,6 +126,14 @@ std::map<std::string, Value> Key::EnumerateValues()
 	return map;
 }
 
+Value Key::GetValue(std::string parameter)
+{
+	LSTATUS status;
+	LPCSTR valName = (parameter.size() == 0 ? NULL : parameter.data());
+	constexpr const auto valueDefault = 2048;
+	return {};
+}
+
 void Key::SetValue(std::string parameter, Value v)
 {
 	if (parameter.size() == 0 && v.type_ != REG_SZ)
