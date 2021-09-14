@@ -1,0 +1,19 @@
+# IDE
+.vs
+*.idb
+*.vcxproj.filters
+*.vcxproj.user
+
+# Artifacts
+
+/Debug
+/Release
+
+*.pdb
+*.exe
+*.obj
+
+# Logs
+
+*.log
+*.tlog
