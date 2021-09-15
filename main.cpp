@@ -20,7 +20,11 @@ int main(int argc, char **argv)
 		ConfigReader::ApplyConfig(cmd.getConfigEdit());
 		break;
 	case LaunchType::Open:
+	{
+		Launcher l(ConfigReader::ReadConfig());
+		l.launch(cmd.getUrl());
 		break;
+	}
 	case LaunchType::BrowserList:
 	{
 		auto list = ConfigReader::ListBrowsers();

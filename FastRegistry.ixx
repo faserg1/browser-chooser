@@ -131,7 +131,13 @@ Value Key::GetValue(std::string parameter)
 	LSTATUS status;
 	LPCSTR valName = (parameter.size() == 0 ? NULL : parameter.data());
 	constexpr const auto valueDefault = 2048;
-	return {};
+	std::vector<std::byte> bufValue(valueDefault);
+	DWORD type;
+	DWORD sizeValue = valueDefault;
+	status = RegGetValueA(this->key_, NULL, parameter.data(), RRF_RT_ANY, &type, reinterpret_cast<LPBYTE>(bufValue.data()), &sizeValue);
+	if (status != ERROR_SUCCESS)
+		return {};
+	return Value::ConstructFrom(type, bufValue, sizeValue);
 }
 
 void Key::SetValue(std::string parameter, Value v)
