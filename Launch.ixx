@@ -38,6 +38,8 @@ private:
 	std::string getBrowserType(std::string_view protocol, std::string browser);
 	std::string getExecLink(std::string type, std::string_view link);
 	void startApp(std::string execLink);
+
+	bool isRelated(std::string_view link, Filter f);
 };
 
 Launcher::Launcher(ConfigData cfg) : cfg_(std::move(cfg))
@@ -48,8 +50,6 @@ void Launcher::launch(std::string_view link)
 {
 	auto browser = chooseBrowser(link);
 	auto protocol = getProtocol(link);
-	auto domain = getDomain(link);
-	auto path = getPath(link);
 	auto type = getBrowserType(protocol, browser);
 	auto execLink = getExecLink(type, link);
  	startApp(execLink);
@@ -57,8 +57,13 @@ void Launcher::launch(std::string_view link)
 
 std::string Launcher::chooseBrowser(std::string_view link)
 {
-	// Stub
-	return "Google Chrome";
+	Filter related;
+	for (auto f : cfg_.filters)
+	{
+		if (isRelated(link, f))
+			related = f;
+	}
+	return related.browser;
 }
 
 std::string_view Launcher::getProtocol(std::string_view link)
@@ -72,6 +77,7 @@ std::string_view Launcher::getDomain(std::string_view link)
 	auto domainView = link 
 		| std::views::drop_while([](char n) -> bool {return n != ':'; })
 		| std::views::drop_while([](char n) -> bool {return n == ':' || n == '/'; })
+		| std::views::take_while([](char n) -> bool {return n != '/'; })
 		| std::views::common;
 	return std::string_view(&*domainView.begin(), std::ranges::distance(domainView));
 }
@@ -123,4 +129,23 @@ void Launcher::startApp(std::string execLink)
 		| std::views::common;
 	auto cmdFile = std::string(&*cmdFileView.begin(), std::ranges::distance(cmdFileView));
 	auto instance = ShellExecuteA(NULL, "open", cmdFile.c_str(), params.c_str(), NULL, 0);
+}
+
+bool Launcher::isRelated(std::string_view link, Filter f)
+{
+	using namespace std::string_literals;
+	auto wildcard = "*"s;
+	auto protocol = getProtocol(link);
+	auto domain = getDomain(link);
+	auto path = getPath(link);
+	auto protoWildcard = (f.protocol == wildcard);
+	auto domainWildcard = (f.domain == wildcard);
+	auto pathWildcard = (f.path == wildcard);
+	if (!protoWildcard && protocol != f.protocol)
+		return false;
+	if (!domainWildcard && !domain.ends_with(f.domain))
+		return false;
+	if (!pathWildcard && !path.starts_with(f.path))
+		return false;
+	return true;
 }

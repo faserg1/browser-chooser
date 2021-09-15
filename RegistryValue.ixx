@@ -55,7 +55,7 @@ Value Value::ConstructFrom(DWORD type, std::vector<std::byte> bytes, DWORD reade
 	switch (type)
 	{
 	case REG_SZ:
-		v.value_ = std::string(reinterpret_cast<char*>(bytes.data()), readed-1);
+		v.value_ = std::string(reinterpret_cast<char*>(bytes.data()), strlen(reinterpret_cast<char*>(bytes.data())));
 		break;
 	case REG_BINARY:
 		v.value_ = bytes;
@@ -73,7 +73,7 @@ std::vector<std::byte> Value::ToBinary()
 	case REG_SZ:
 	{
 		auto str = any_cast<std::string>(value_);
-		auto vec = std::vector<std::byte>(str.size()+1);
+		auto vec = std::vector<std::byte>(str.size());
 		str.copy(reinterpret_cast<char *>(vec.data()), str.size());
 		vec.push_back(std::byte{});
 		return vec;

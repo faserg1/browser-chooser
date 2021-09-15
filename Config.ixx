@@ -15,27 +15,27 @@ export struct Filter
 	std::string path;
 	std::string browser;
 
-	int operator<(const Filter& f)
+	bool operator<(const Filter& f)
 	{
 		if (protocol == "*" && f.protocol != "*")
-			return 1;
+			return true;
 		if (f.protocol == "*" && protocol != "*")
-			return -1;
+			return false;
 		if (domain == "*" && f.domain != "*")
-			return 1;
+			return true;
 		if (f.domain == "*" && domain != "*")
-			return -1;
+			return false;
 		if (path == "*" && f.path != "*")
-			return 1;
+			return true;
 		if (f.path == "*" && path != "*")
-			return -1;
+			return false;
 		if (protocol != f.protocol)
 			return protocol < f.protocol;
 		if (domain != f.domain)
 			return domain < f.domain;
 		if (protocol != f.protocol)
 			return path < f.path;
-		return 0;
+		return false;
 	}
 	auto operator==(const Filter& f)
 	{
