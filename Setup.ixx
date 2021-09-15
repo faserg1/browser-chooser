@@ -66,10 +66,18 @@ void Setup::CheckOrCreateStartMenuInternet(std::string appPath)
 	auto cmdPath = "\""s + appPath + "\" --default";
 	cmd.SetValue({}, cmdPath);
 	auto cap = ch.Create("Capabilities", Access::ReadWrite);
+	auto start = cap.Create("Startmenu", Access::ReadWrite);
+	start.SetValue("StartMenuInternet", "Browser Chooser"s);
+	auto url = cap.Create("URLAssociations", Access::ReadWrite);
+	auto protocols = {"http", "https", "ftp", "irc", "mailto", "mms", "news", "nntp", "sms", "smsto", "snews", "tel", "urn", "webcal"};
+	for (auto proto : protocols)
+		url.SetValue(proto, "BrowserChooser"s);
 }
 
 void Setup::CheckOrRegisterApplication()
 {
+	auto key = Key::RootOpen(RootKey::LOCAL_MACHINE, "SOFTWARE\\RegisteredApplications", Access::ReadWrite);
+	key.SetValue("Browser Chooser", "Software\\Clients\\StartMenuInternet\\Browser Chooser\\Capabilities"s);
 }
 
 bool Setup::IsElevated()
