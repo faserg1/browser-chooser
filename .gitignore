@@ -8,6 +8,7 @@
 
 /Debug
 /Release
+/x64
 
 *.pdb
 *.exe

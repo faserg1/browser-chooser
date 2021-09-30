@@ -28,12 +28,14 @@ private:
 	static void DeleteFilter(size_t num);
 };
 
+constexpr const char *BrowserConfigPath = "SOFTWARE\\BrowserChooser";
+
 template<typename T> void printColumn(T t, const int& width);
 
 ConfigData ConfigReader::ReadConfig()
 {
 	ConfigData data{};
-	auto key = Key::RootOpen(RootKey::CURRENT_USER, "SOFTWARE\\BrowserChooser");
+	auto key = Key::RootOpen(RootKey::CURRENT_USER, BrowserConfigPath);
 	auto list = key.EnumerateSubKeys();
 	for (auto sub : list)
 	{
@@ -106,7 +108,7 @@ void ConfigReader::AddFilter(Filter filter)
 {
 	auto str = filter.protocol + filter.domain + filter.path;
 	auto hash = std::to_string(std::hash<std::string>{}(str));
-	auto key = Key::RootOpen(RootKey::CURRENT_USER, "SOFTWARE\\BrowserChooser", Access::ReadWrite);
+	auto key = Key::RootOpen(RootKey::CURRENT_USER, BrowserConfigPath, Access::ReadWrite);
 	auto keyFilter = key.Create(hash, Access::ReadWrite);
 	keyFilter.SetValue("protocol", filter.protocol);
 	keyFilter.SetValue("domain", filter.domain);
@@ -116,10 +118,16 @@ void ConfigReader::AddFilter(Filter filter)
 
 void ConfigReader::EditFilter(size_t num, Filter filter)
 {
+	DeleteFilter(num);
+	AddFilter(filter);
 }
 
 void ConfigReader::DeleteFilter(size_t num)
 {
+	auto cfg = ReadConfig();
+	auto hash = cfg.filters[num].hash;
+	auto key = Key::RootOpen(RootKey::CURRENT_USER, BrowserConfigPath, Access::ReadWrite);
+	key.Delete(hash);
 }
 
 template<typename T> void printColumn(T t, const int& width)

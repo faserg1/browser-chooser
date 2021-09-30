@@ -37,6 +37,7 @@ public:
 
 	Key Open(std::string path, Access = Access::Read);
 	Key Create(std::string sub, Access = Access::Read);
+	bool Delete(std::string sub);
 	std::vector<std::string> EnumerateSubKeys();
 	std::map<std::string, Value> EnumerateValues();
 	Value GetValue(std::string parameter);
@@ -52,6 +53,7 @@ private:
 private:
 	static LSTATUS InternalOpen(HKEY parent, std::string path, Access access, PHKEY result);
 	static LSTATUS InternalCreate(HKEY parent, std::string sub, Access access, PHKEY result);
+	static LSTATUS InternalDelete(HKEY parent, std::string sub);
 	static DWORD ConvertAccess(Access access);
 	static std::string ConvertRoot(RootKey key);
 	static std::string MakeError(std::string path, LSTATUS code);
@@ -90,6 +92,11 @@ Key Key::Create(std::string sub, Access access)
 	if (stat != ERROR_SUCCESS)
 		throw std::runtime_error(MakeError(totalpath, stat));
 	return Key(result, totalpath);
+}
+
+bool Key::Delete(std::string sub)
+{
+	return InternalDelete(this->key_, sub) == ERROR_SUCCESS;
 }
 
 std::vector<std::string> Key::EnumerateSubKeys()
@@ -161,6 +168,11 @@ LSTATUS Key::InternalCreate(HKEY parent, std::string sub, Access access, PHKEY k
 {
 	DWORD result;
 	return RegCreateKeyExA(parent, sub.data(), 0, NULL, REG_OPTION_NON_VOLATILE, ConvertAccess(access), NULL, key, &result);
+}
+
+LSTATUS Key::InternalDelete(HKEY parent, std::string sub)
+{
+	return RegDeleteKeyA(parent, sub.c_str());
 }
 
 DWORD Key::ConvertAccess(Access access)
