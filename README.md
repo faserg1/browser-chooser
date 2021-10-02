@@ -1,6 +1,6 @@
 # Browser Chooser
 
-You want to select, which browser open, when clicked link in app, but automaticly? Mee too, so I made this program.
+You want to select, which browser to open, when clicked link in app, but automaticly? Mee too, so I made this program.
 
 ## Features
 
