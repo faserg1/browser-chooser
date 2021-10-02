@@ -63,7 +63,7 @@ There is a solution =) Here used C++20 standard.
 
 ## Future plans
 
-*. Control more? Like, parse, if needed and then open? Or look for a query? Scripting behaviour?
-*. Windows and tray. Select default browser for a while?
-*. Set as default browser in installation
-*. ...
+* Control more? Like, parse, if needed and then open? Or look for a query? Scripting behaviour?
+* Windows and tray. Select default browser for a while?
+* Set as default browser in installation
+* ...
